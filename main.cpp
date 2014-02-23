@@ -82,16 +82,16 @@ int main( const int argc , char *argv[] )
 						my_multimap.erase( j );
 						my_multimap.erase( k );
 
-						// go to outest loop
+						// restart all over again
 						mod_flag = true;
-						goto outest;
+						goto restart;
 					}
 				}
 			}
 		}
 
-	outest:;
-//		printf( "outest\n\n" );
+	restart:;
+//		printf( "restart\n\n" );
 	}
 
 	// pretty output
