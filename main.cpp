@@ -37,7 +37,7 @@ int main( const int argc , char *argv[] )
 			const uint32_t b = strtoul( if_range + 1 , NULL , 0 );
 //			printf("a: %c %u\n" , argv[i][0] , a );
 //			printf("b: %c %u\n" , *(if_range + 1) , b );
-			for( size_t i = min( a , b ) , end = max( a , b ); i <= end ; ++i )
+			for( auto i = min( a , b ) , end = max( a , b ); i <= end ; ++i )
 			{
 				my_set.insert( i );
 			}
