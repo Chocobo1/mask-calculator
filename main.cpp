@@ -1,8 +1,8 @@
 #include <map>
+#include <set>
 #include <cstdio>
 #include <cstdint>
 #include <cstring>
-#include <unordered_set>
 
 using namespace std;
 
@@ -17,7 +17,7 @@ int main( const int argc , char *argv[] )
 //	printArg( argc , argv );
 
 	// get/sort numbers
-	unordered_set< uint32_t > my_set;  // limit to 32 bytes
+	set< uint32_t > my_set;  // limit to 32 bytes
 	for( auto i = 1 ; i < argc ; ++i )
 	{
 		// check if is range of numbers
