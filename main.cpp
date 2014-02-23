@@ -1,38 +1,56 @@
-#include <cstdio>
-#include <cstdlib>
-#include <cctype>
 #include <set>
 #include <map>
+#include <cstdio>
 #include <cstdint>
-
-#include <iostream>
+#include <cstring>
 
 using namespace std;
 
 
 void printArg( const int argc , char *argv[] );
-void checkArg( const int argc , char *argv[] );
 bool diffOneBit( const uint32_t a, const uint32_t b );
-
 
 
 int main( const int argc , char *argv[] )
 {
 	// input handling
 //	printArg( argc , argv );
-	checkArg( argc , argv );
 
 	// get/sort numbers
 	set< uint32_t > my_set;  // limit to 32 bytes
 	for( auto i = 1 ; i < argc ; ++i )
 	{
-		const uint32_t a = strtoul( argv[i] , NULL , 0 );
-//		printf("%d: %u\n" , i , a );
-		my_set.insert( a );
+		// check if is range of numbers
+		const char *if_range = strchr( argv[i] , '-' );
+		if( if_range != NULL )
+		{
+			// check for invalid input
+			if( ( if_range == argv[i] ) ||            // first char is delimiter
+					( *( if_range + 1 ) == '\0' ) ||  // last char is delimiter
+					( *( if_range + 1 ) == '-' ) )    // 2 delimiters
+			{
+				fprintf( stderr, "input invalid: %s\n" , argv[i] );
+				exit( EXIT_FAILURE );
+			}
+
+			const uint32_t a = strtoul( argv[i] , NULL , 0 );
+			const uint32_t b = strtoul( if_range + 1 , NULL , 0 );
+//			printf("a: %c %u\n" , argv[i][0] , a );
+//			printf("b: %c %u\n" , *(if_range + 1) , b );
+			for( size_t i = min( a , b ) , end = max( a , b ); i <= end ; ++i )
+			{
+				my_set.insert( i );
+			}
+		}
+		else
+		{
+			// single number
+			const uint32_t a = strtoul( argv[i] , NULL , 0 );
+			my_set.insert( a );
+		}
 	}
 
 	// start algorithm
-
 	// first time insert
 	multimap< uint32_t , uint32_t > my_multimap;  // <Key, Value> = <mask, value>
 	for( auto i = my_set.begin() ; i != my_set.end() ; ++i )
@@ -112,20 +130,6 @@ void printArg( const int argc , char *argv[] )
 	for( auto i = 1 ; i < argc ; ++i )
 	{
 		printf( "argv[%d]: %s\n" , i , argv[i] );
-	}
-	return;
-}
-
-
-void checkArg( const int argc , char *argv[] )
-{
-	for( auto i = 1 ; i < argc ; ++i )
-	{
-		if( isxdigit( argv[i][0] ) == 0 )
-		{
-			printf( "argv[%d]: %s is not a number!\n" , i , argv[i] );
-			exit( EXIT_FAILURE );
-		}
 	}
 	return;
 }
