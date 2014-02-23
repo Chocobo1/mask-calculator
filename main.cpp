@@ -57,6 +57,7 @@ int main( const int argc , char *argv[] )
 	{
 		my_multimap.emplace( UINT_MAX , *i );
 	}
+	my_set.clear();
 
 	// for each mask
 	bool mod_flag = true;
