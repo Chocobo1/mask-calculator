@@ -114,7 +114,7 @@ int main( const int argc , char *argv[] )
 	}
 
 	// pretty output
-	size_t counter = 0;
+	size_t counter = 1;
 	printf( "\nvalue / mask\n" );
 	for( auto i = my_multimap.begin() ; i != my_multimap.end() ; ++i )
 	{
