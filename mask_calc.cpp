@@ -60,14 +60,14 @@ void MaskCalc::calcMask()
 		{
 			// for each value sharing the same mask
 			const uint32_t now_mask = i->first;
-//			printf( "now_mask: 0x%x\n" , now_mask );
+//			printf( "\nnow_mask: 0x%x\n" , now_mask );
 
 			const auto t = my_multimap.equal_range( now_mask );
 			for( auto j = t.first ; j != t.second ; ++j )
 			{
 				// get first merge value
 				const auto v1 = j->second;
-//				printf( "v1: %u/0x%x\n" , v1 , j->first );
+//				printf( " v1: %u/0x%x\n" , v1 , j->first );
 
 				// compare to other values
 				auto k = j; ++k;
@@ -75,10 +75,10 @@ void MaskCalc::calcMask()
 				{
 					// get second merge value
 					const auto v2 = k->second;
-//					printf( "v2: %u/0x%x\n" , v2 , k->first );
+//					printf( " v2: %u/0x%x\n" , v2 , k->first );
 
 					const bool if_merge = diffOneBit( v1 , v2 );
-					// printf( "v1: %u, v2: %u, result: %d\n" , v1 , v2 , if_merge );
+//					printf( "v1: %u, v2: %u, result: %d\n" , v1 , v2 , if_merge );
 					if( if_merge )
 					{
 						// can merge
@@ -86,7 +86,7 @@ void MaskCalc::calcMask()
 						const uint32_t new_value = std::min( v1 , v2 );
 
 						my_multimap.emplace( new_mask , new_value );
-//						printf( "emplace, new_mask: 0x%x, new_value: %u\n" , new_mask , new_value );
+//						printf( "emplace, new_mask: 0x%x, new_value: %u\n\n" , new_mask , new_value );
 
 						// remove merged values
 						my_multimap.erase( j );
