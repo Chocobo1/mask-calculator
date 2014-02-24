@@ -9,7 +9,7 @@ MaskCalc::MaskCalc()
 
 void MaskCalc::addNum( const uint32_t a )
 {
-	if( a > my_set.capacity() )
+	if( a > ( my_set.capacity() - 1 ) )
 	{
 		my_set.resize( a + 1 );
 	}
@@ -25,7 +25,7 @@ void MaskCalc::addNum( const uint32_t a , const uint32_t b )
 	const uint32_t start = std::min( a , b );
 	const uint32_t end = std::max( a , b );
 
-	if( end > my_set.capacity() )
+	if( end > ( my_set.capacity() - 1 ) )
 	{
 		my_set.resize( end + 1 );
 	}
