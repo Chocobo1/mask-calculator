@@ -11,9 +11,10 @@ void MaskCalc::addNum( const uint32_t a )
 void MaskCalc::addNum( const uint32_t a , const uint32_t b )
 {
 	// add a range of numbers [a, b]
+	auto h = my_set.cend();
 	for( auto i = std::min( a , b ) , end = std::max( a , b ); i <= end ; ++i )
 	{
-		addNum( i );
+		h = my_set.emplace_hint( h , i );
 	}
 	return;
 }
