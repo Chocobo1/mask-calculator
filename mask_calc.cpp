@@ -25,11 +25,11 @@ void MaskCalc::calcMask()
 	// start algorithm
 	// first time insert
 	auto h = my_multimap.cend();
-	for( auto i = my_set.begin() ; i != my_set.end() ; ++i )
+	for( auto i = my_set.begin() ; i != my_set.end() ; )
 	{
 		h = my_multimap.emplace_hint( h , UINT_MAX , *i );
+		my_set.erase( i++ );
 	}
-	my_set.clear();
 
 	// for each mask
 	bool mod_flag = true;
