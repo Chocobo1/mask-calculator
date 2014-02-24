@@ -56,8 +56,10 @@ void MaskCalc::calcMask()
 	{
 		mod_flag = false;
 
-		for( auto i = my_multimap.begin() ; i != my_multimap.end() ; i = my_multimap.upper_bound( i->first ) )
+		for( auto i = my_multimap.end() ; i != my_multimap.begin() ; i = my_multimap.lower_bound( i->first ) )
 		{
+			--i;
+
 			// for each value sharing the same mask
 			const uint32_t now_mask = i->first;
 //			printf( "\nnow_mask: 0x%x\n" , now_mask );
