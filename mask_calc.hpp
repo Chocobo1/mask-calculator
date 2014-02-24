@@ -2,13 +2,14 @@
 #define mask_calc_HPP
 
 #include <map>
-#include <set>
+#include <vector>
 #include <cstdint>
 
 
 class MaskCalc
 {
 	public:
+		MaskCalc();
 		void addNum( const uint32_t a );
 		void addNum( const uint32_t a , const uint32_t b );
 
@@ -20,8 +21,8 @@ class MaskCalc
 	private:
 		bool diffOneBit( const uint32_t a, const uint32_t b ) const;
 
-		std::set< uint32_t > my_set;  // limit to 32 bits
-		std::multimap< uint32_t , uint32_t > my_multimap;  // <Key, Value> = <mask, value>
+		std::vector< bool > my_set;
+		std::multimap< uint32_t , uint32_t > my_multimap;  // limit to 32 bits, <Key, Value> = <mask, value>
 };
 
 

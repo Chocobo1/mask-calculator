@@ -1,9 +1,20 @@
 #include "mask_calc.hpp"
 
 
+MaskCalc::MaskCalc()
+{
+	my_set.resize( 65536 );
+}
+
+
 void MaskCalc::addNum( const uint32_t a )
 {
-	my_set.emplace( a );
+	if( a > my_set.capacity() )
+	{
+		my_set.resize( a + 1 );
+	}
+
+	my_set[ a ] = true;
 	return;
 }
 
@@ -11,10 +22,17 @@ void MaskCalc::addNum( const uint32_t a )
 void MaskCalc::addNum( const uint32_t a , const uint32_t b )
 {
 	// add a range of numbers [a, b]
-	auto h = my_set.cend();
-	for( auto i = std::min( a , b ) , end = std::max( a , b ); i <= end ; ++i )
+	const uint32_t start = std::min( a , b );
+	const uint32_t end = std::max( a , b );
+
+	if( end > my_set.capacity() )
 	{
-		h = my_set.emplace_hint( h , i );
+		my_set.resize( end + 1 );
+	}
+
+	for( auto i = start ; i <= end ; ++i )
+	{
+		my_set[ i ] = true;
 	}
 	return;
 }
@@ -25,11 +43,12 @@ void MaskCalc::calcMask()
 	// start algorithm
 	// first time insert
 	auto h = my_multimap.cend();
-	for( auto i = my_set.begin() ; i != my_set.end() ; )
+	for( size_t i = 0 ; i < my_set.size() ; ++i )
 	{
-		h = my_multimap.emplace_hint( h , UINT_MAX , *i );
-		my_set.erase( i++ );
+		if( my_set[ i ] == true )
+			h = my_multimap.emplace_hint( h , UINT_MAX , i );
 	}
+	my_set.clear();
 
 	// for each mask
 	bool mod_flag = true;
