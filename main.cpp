@@ -7,6 +7,7 @@
 using namespace std;
 
 
+void printUsage( const char *a );
 void printArg( const int argc , char *argv[] );
 bool diffOneBit( const uint32_t a, const uint32_t b );
 
@@ -15,6 +16,11 @@ int main( const int argc , char *argv[] )
 {
 	// input handling
 //	printArg( argc , argv );
+	if( argc < 2 )
+	{
+		printUsage( argv[0] );
+		exit( EXIT_FAILURE );
+	}
 
 	// get/sort numbers
 	set< uint32_t > my_set;  // limit to 32 bytes
@@ -29,6 +35,7 @@ int main( const int argc , char *argv[] )
 					( *( if_range + 1 ) == '\0' ) ||  // last char is delimiter
 					( *( if_range + 1 ) == '-' ) )    // 2 delimiters
 			{
+				printUsage( argv[0] );
 				fprintf( stderr, "input invalid: %s\n" , argv[i] );
 				exit( EXIT_FAILURE );
 			}
@@ -115,7 +122,7 @@ int main( const int argc , char *argv[] )
 
 	// pretty output
 	size_t counter = 1;
-	printf( "\nvalue / mask\n" );
+	printf( "\nvalue(dec) / mask(hex)\n" );
 	for( auto i = my_multimap.begin() ; i != my_multimap.end() ; ++i )
 	{
 		printf( "%zu: %u / %x\n" , counter++ , i->second , i->first );
@@ -132,6 +139,18 @@ void printArg( const int argc , char *argv[] )
 	{
 		printf( "argv[%d]: %s\n" , i , argv[i] );
 	}
+	return;
+}
+
+
+void printUsage( const char *a )
+{
+	fprintf( stderr , "\n" );
+	fprintf( stderr , "Mask calculator\n\n" );
+	fprintf( stderr , "Usage: %s port1 port2 [...]\n" , a );
+	fprintf( stderr , "Example1: %s 50 100\n" , a );
+	fprintf( stderr , "Example2: %s 50-100\n" , a );
+	fprintf( stderr , "Example3: %s 50 100 1000-1020\n\n" , a );
 	return;
 }
 
