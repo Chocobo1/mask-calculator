@@ -20,7 +20,7 @@ class MaskCalc
 	private:
 		bool diffOneBit( const uint32_t a, const uint32_t b ) const;
 
-		std::set< uint32_t > my_set;  // limit to 32 bytes
+		std::set< uint32_t > my_set;  // limit to 32 bits
 		std::multimap< uint32_t , uint32_t > my_multimap;  // <Key, Value> = <mask, value>
 };
 
