@@ -89,7 +89,7 @@ void MaskCalc::calcMask()
 }
 
 
-const std::multimap< uint32_t , uint32_t > *MaskCalc::getOutput()
+const std::multimap< uint32_t , uint32_t > *MaskCalc::getOutput() const
 {
 	return &my_multimap;
 }

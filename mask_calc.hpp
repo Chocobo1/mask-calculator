@@ -13,7 +13,7 @@ class MaskCalc
 		void addNum( const uint32_t a , const uint32_t b );
 
 		void calcMask();
-		const std::multimap< uint32_t , uint32_t > *getOutput();
+		const std::multimap< uint32_t , uint32_t > *getOutput() const;
 
 		void reset();
 
