@@ -6,8 +6,6 @@
 #include <cstdint>
 
 
-bool diffOneBit( const uint32_t a, const uint32_t b );
-
 class MaskCalc
 {
 	public:
