@@ -51,9 +51,6 @@ int main( const int argc , char *argv[] )
 		}
 	}
 
-	// calculate mask
-	my_calc.calcMask();
-
 	// pretty output
 	size_t counter = 1;
 	auto *a = my_calc.getOutput();

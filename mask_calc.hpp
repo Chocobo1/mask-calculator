@@ -13,15 +13,15 @@ class MaskCalc
 		void addNum( const uint32_t a );
 		void addNum( const uint32_t a , const uint32_t b );
 
-		void calcMask();
 		const std::multimap< uint32_t , uint32_t > *getOutput() const;
 
 		void reset();
 
 	private:
+		void calcMask( const uint32_t my_val , const uint32_t my_mask );
+		void stage2( const uint32_t my_val , const uint32_t my_mask );
 		bool diffOneBit( const uint32_t a, const uint32_t b ) const;
 
-		std::vector< bool > my_set;
 		std::multimap< uint32_t , uint32_t > my_multimap;  // limit to 32 bits, <Key, Value> = <mask, value>
 };
 

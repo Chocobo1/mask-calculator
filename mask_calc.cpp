@@ -3,18 +3,12 @@
 
 MaskCalc::MaskCalc()
 {
-	my_set.resize( 65536 );
 }
 
 
 void MaskCalc::addNum( const uint32_t a )
 {
-	if( a > ( my_set.capacity() - 1 ) )
-	{
-		my_set.resize( a + 1 );
-	}
-
-	my_set[ a ] = true;
+	calcMask( a , UINT_MAX );
 	return;
 }
 
@@ -25,87 +19,81 @@ void MaskCalc::addNum( const uint32_t a , const uint32_t b )
 	const uint32_t start = std::min( a , b );
 	const uint32_t end = std::max( a , b );
 
-	if( end > ( my_set.capacity() - 1 ) )
-	{
-		my_set.resize( end + 1 );
-	}
-
 	for( auto i = start ; i <= end ; ++i )
 	{
-		my_set[ i ] = true;
+		calcMask( i , UINT_MAX );
 	}
 	return;
 }
 
 
-void MaskCalc::calcMask()
+void MaskCalc::calcMask( const uint32_t my_val , const uint32_t my_mask )
 {
-	// start algorithm
-	// first time insert
-	for( size_t i = 0 ; i < my_set.size() ; ++i )
+	// stage 1, check if covered by existing mask
+
+//	printf( "\n[s1] start, %u/0x%x\n" , my_val , my_mask );
+	for( auto i = my_multimap.begin() ; i != my_multimap.end() ; i = my_multimap.upper_bound( i->first ) )
 	{
-		if( my_set[ i ] == true )
+		const uint32_t now_mask = i->first;
+//		printf( "[s1] now_mask: 0x%x\n" , now_mask );
+
+		if( now_mask == my_mask )  // skip same mask
+			continue;
+
+		const auto t = my_multimap.equal_range( now_mask );
+		for( auto j = t.first ; j != t.second ; ++j )  // for each same mask values
 		{
-			my_multimap.emplace_hint( my_multimap.cend() , UINT_MAX , i );
-		}
-	}
-	my_set.clear();
+			const auto other_val = j->second;
+//			printf( "[s1] try merge: %u/0x%x\n" , other_val , now_mask );
 
-	// for each mask
-	bool mod_flag = true;
-	while( mod_flag )
-	{
-		mod_flag = false;
-
-		for( auto i = my_multimap.end() ; i != my_multimap.begin() ; i = my_multimap.lower_bound( i->first ) )
-		{
-			--i;
-
-			// for each value sharing the same mask
-			const uint32_t now_mask = i->first;
-//			printf( "\nnow_mask: 0x%x\n" , now_mask );
-
-			const auto t = my_multimap.equal_range( now_mask );
-			for( auto j = t.first ; j != t.second ; ++j )
+			if( ( other_val & now_mask ) == ( my_val & now_mask ) )
 			{
-				// get first merge value
-				const auto v1 = j->second;
-//				printf( " v1: %u/0x%x\n" , v1 , j->first );
-
-				// compare to other values
-				auto k = j; ++k;
-				for( ; k != t.second ; ++k )
-				{
-					// get second merge value
-					const auto v2 = k->second;
-//					printf( " v2: %u/0x%x\n" , v2 , k->first );
-
-					const bool if_merge = diffOneBit( v1 , v2 );
-//					printf( "v1: %u, v2: %u, result: %d\n" , v1 , v2 , if_merge );
-					if( if_merge )
-					{
-						// can merge
-						const uint32_t new_mask = now_mask & ( ~( v1 xor v2 ) );
-						const uint32_t new_value = std::min( v1 , v2 );
-
-						my_multimap.emplace( new_mask , new_value );
-//						printf( "emplace, new_mask: 0x%x, new_value: %u\n\n" , new_mask , new_value );
-
-						// remove merged values
-						my_multimap.erase( j );
-						my_multimap.erase( k );
-
-						// restart all over again
-						mod_flag = true;
-						goto restart;
-					}
-				}
+				// can be merged into existing mask
+//				printf( "[s1] merged into: %u/0x%x\n" , other_val , now_mask );
+//				printf( "[s1] end\n" );
+				return;
 			}
 		}
-
-	restart:;
-//		printf( "restart\n\n" );
 	}
+//	printf( "[s1] end\n" );
+
+	stage2( my_val , my_mask );
+
+	return;
+}
+
+
+void MaskCalc::stage2( const uint32_t my_val , const uint32_t my_mask )
+{
+	// stage2, try to merge with other values which have the same mask
+
+//	printf( "\n [s2] start: %u/0x%x\n" , my_val , my_mask );
+	const auto t = my_multimap.equal_range( my_mask );
+	for( auto j = t.first ; j != t.second ; ++j )
+	{
+		// try to merge with other values
+		const auto other_val = j->second;
+		const bool if_merge = diffOneBit( my_val , other_val );
+//		printf( " [s2] other_val: %u/0x%x, result: %d\n" , other_val , my_mask , if_merge );
+		if( if_merge )
+		{
+			const uint32_t new_mask = my_mask & ( ~( my_val xor other_val ) );
+			const uint32_t new_val = std::min( my_val , other_val );
+
+			// remove merged values
+			my_multimap.erase( j );
+
+//			printf( " [s2] recursive\n" );
+			stage2( new_val , new_mask );
+
+			return;
+		}
+	}
+
+	// cannot merge with any other values
+	my_multimap.emplace( my_mask , my_val );
+//	printf( " [s2] emplace, %u/0x%x\n" , my_val , my_mask );
+//	printf( " [s2] end\n" );
 
 	return;
 }
@@ -119,7 +107,6 @@ const std::multimap< uint32_t , uint32_t > *MaskCalc::getOutput() const
 
 void MaskCalc::reset()
 {
-	my_set.clear();
 	my_multimap.clear();
 	return;
 }
