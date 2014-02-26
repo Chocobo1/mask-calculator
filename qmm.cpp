@@ -18,9 +18,10 @@ void QMM::addNum( const uint32_t a , const uint32_t b )
 	const uint32_t start = std::min( a , b );
 	const uint32_t end = std::max( a , b );
 
+	auto h = my_input.cend();
 	for( auto i = start ; i <= end ; ++i )
 	{
-		my_input.emplace( i );
+		h = my_input.emplace_hint( h , i );
 	}
 	return;
 }
