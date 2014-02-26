@@ -1,12 +1,12 @@
-#ifndef mask_calc_HPP
-#define mask_calc_HPP
+#ifndef my_alg_HPP
+#define my_alg_HPP
 
 #include <map>
 #include <vector>
 #include <cstdint>
 
 
-class MaskCalc
+class MyAlg
 {
 	public:
 		void addNum( const uint32_t a );

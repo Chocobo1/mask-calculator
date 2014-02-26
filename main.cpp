@@ -1,7 +1,7 @@
 #include <cstdio>
 #include <cstring>
 
-#include "mask_calc.hpp"
+#include "my_alg.hpp"
 
 
 void printUsage( const char *a );
@@ -18,7 +18,7 @@ int main( const int argc , char *argv[] )
 		exit( EXIT_FAILURE );
 	}
 
-	MaskCalc my_calc;
+	MyAlg my_calc;
 
 	// get/sort numbers
 	for( auto i = 1 ; i < argc ; ++i )

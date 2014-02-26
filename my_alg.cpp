@@ -1,14 +1,14 @@
-#include "mask_calc.hpp"
+#include "my_alg.hpp"
 
 
-void MaskCalc::addNum( const uint32_t a )
+void MyAlg::addNum( const uint32_t a )
 {
 	calcMask( a , UINT_MAX );
 	return;
 }
 
 
-void MaskCalc::addNum( const uint32_t a , const uint32_t b )
+void MyAlg::addNum( const uint32_t a , const uint32_t b )
 {
 	// add a range of numbers [a, b]
 	const uint32_t start = std::min( a , b );
@@ -22,14 +22,14 @@ void MaskCalc::addNum( const uint32_t a , const uint32_t b )
 }
 
 
-void MaskCalc::doCalc()
+void MyAlg::doCalc()
 {
 	// nothing to do
 	return;
 }
 
 
-void MaskCalc::calcMask( const uint32_t my_val , const uint32_t my_mask )
+void MyAlg::calcMask( const uint32_t my_val , const uint32_t my_mask )
 {
 	// stage 1, check if covered by existing mask
 
@@ -65,7 +65,7 @@ void MaskCalc::calcMask( const uint32_t my_val , const uint32_t my_mask )
 }
 
 
-void MaskCalc::stage2( const uint32_t my_val , const uint32_t my_mask )
+void MyAlg::stage2( const uint32_t my_val , const uint32_t my_mask )
 {
 	// stage2, try to merge with other values which have the same mask
 
@@ -101,20 +101,20 @@ void MaskCalc::stage2( const uint32_t my_val , const uint32_t my_mask )
 }
 
 
-const std::multimap< uint32_t , uint32_t > *MaskCalc::getOutput() const
+const std::multimap< uint32_t , uint32_t > *MyAlg::getOutput() const
 {
 	return &my_multimap;
 }
 
 
-void MaskCalc::reset()
+void MyAlg::reset()
 {
 	my_multimap.clear();
 	return;
 }
 
 
-bool MaskCalc::checkMasked( const uint32_t a , const uint32_t a_mask , const uint32_t b ) const
+bool MyAlg::checkMasked( const uint32_t a , const uint32_t a_mask , const uint32_t b ) const
 {
 	if( ( a & a_mask ) == ( b & a_mask ) )
 	{
@@ -124,7 +124,7 @@ bool MaskCalc::checkMasked( const uint32_t a , const uint32_t a_mask , const uin
 }
 
 
-bool MaskCalc::diffOneBit( const uint32_t a , const uint32_t b ) const
+bool MyAlg::diffOneBit( const uint32_t a , const uint32_t b ) const
 {
 	const uint32_t c = a xor b;
 	switch( c )
