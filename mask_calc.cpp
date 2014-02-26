@@ -1,11 +1,6 @@
 #include "mask_calc.hpp"
 
 
-MaskCalc::MaskCalc()
-{
-}
-
-
 void MaskCalc::addNum( const uint32_t a )
 {
 	calcMask( a , UINT_MAX );
@@ -46,7 +41,7 @@ void MaskCalc::calcMask( const uint32_t my_val , const uint32_t my_mask )
 			const auto other_val = j->second;
 //			printf( "[s1] try merge: %u/0x%x\n" , other_val , now_mask );
 
-			if( ( other_val & now_mask ) == ( my_val & now_mask ) )
+			if( checkMasked( other_val , now_mask , my_val ) )
 			{
 				// can be merged into existing mask
 //				printf( "[s1] merged into: %u/0x%x\n" , other_val , now_mask );
@@ -112,7 +107,17 @@ void MaskCalc::reset()
 }
 
 
-bool MaskCalc::diffOneBit( const uint32_t a, const uint32_t b ) const
+bool MaskCalc::checkMasked( const uint32_t a , const uint32_t a_mask , const uint32_t b ) const
+{
+	if( ( a & a_mask ) == ( b & a_mask ) )
+	{
+		return true;
+	}
+	return false;
+}
+
+
+bool MaskCalc::diffOneBit( const uint32_t a , const uint32_t b ) const
 {
 	const uint32_t c = a xor b;
 	switch( c )

@@ -9,7 +9,6 @@
 class MaskCalc
 {
 	public:
-		MaskCalc();
 		void addNum( const uint32_t a );
 		void addNum( const uint32_t a , const uint32_t b );
 
@@ -20,7 +19,9 @@ class MaskCalc
 	private:
 		void calcMask( const uint32_t my_val , const uint32_t my_mask );
 		void stage2( const uint32_t my_val , const uint32_t my_mask );
+
 		bool diffOneBit( const uint32_t a, const uint32_t b ) const;
+		bool checkMasked( const uint32_t a , const uint32_t a_mask , const uint32_t b ) const;
 
 		std::multimap< uint32_t , uint32_t > my_multimap;  // limit to 32 bits, <Key, Value> = <mask, value>
 };
