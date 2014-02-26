@@ -22,6 +22,13 @@ void MaskCalc::addNum( const uint32_t a , const uint32_t b )
 }
 
 
+void MaskCalc::doCalc()
+{
+	// nothing to do
+	return;
+}
+
+
 void MaskCalc::calcMask( const uint32_t my_val , const uint32_t my_mask )
 {
 	// stage 1, check if covered by existing mask

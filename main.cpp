@@ -51,6 +51,8 @@ int main( const int argc , char *argv[] )
 		}
 	}
 
+	my_calc.doCalc();
+
 	// pretty output
 	size_t counter = 1;
 	auto *results = my_calc.getOutput();
