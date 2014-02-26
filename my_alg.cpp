@@ -52,7 +52,7 @@ void MyAlg::calcMask( const uint32_t my_val , const uint32_t my_mask )
 
 			if( checkMasked( other_val , now_mask , my_val ) )
 			{
-				// can be merged into existing mask
+				// can be merged with existing mask
 //				printf( "[s1] merged into: %u/0x%x\n" , other_val , now_mask );
 //				printf( "[s1] end\n" );
 				return;
