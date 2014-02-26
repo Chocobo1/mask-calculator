@@ -23,9 +23,6 @@ class QMM
 		void stage2( const uint32_t my_val , const uint32_t my_mask );
 		void applyPetrickMethod();
 
-		bool diffOneBit( const uint32_t a, const uint32_t b ) const;
-		bool checkMasked( const uint32_t a , const uint32_t a_mask , const uint32_t b ) const;
-
 		std::multimap< uint32_t , uint32_t > my_multimap;  // limit to 32 bits, <Key, Value> = <mask, value>
 		std::unordered_set< uint32_t > my_input;  // for storing every inputs
 };
