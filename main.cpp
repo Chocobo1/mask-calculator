@@ -53,11 +53,11 @@ int main( const int argc , char *argv[] )
 
 	// pretty output
 	size_t counter = 1;
-	auto *a = my_calc.getOutput();
+	auto *results = my_calc.getOutput();
 	printf( "\nvalue(dec) / mask(hex)\n" );
-	for( auto i = a->begin() ; i != a->end() ; ++i )
+	for( const auto &i : ( *results ) )
 	{
-		printf( "%zu: %u / %x\n" , counter++ , i->second , i->first );
+		printf( "%zu: %u / %x\n" , counter++ , i.second , i.first );
 	}
 	return 0;
 }
