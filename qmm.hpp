@@ -2,7 +2,6 @@
 #define qmm_HPP
 
 #include <map>
-#include <vector>
 #include <unordered_set>
 #include <cstdint>
 
