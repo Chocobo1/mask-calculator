@@ -25,10 +25,11 @@ class QMM
 		{
 			size_t operator()( const MyMmap::const_iterator &a ) const;
 		};
+		typedef std::unordered_set<MyMmap::const_iterator , MyMmapHash> MyMmapRmList;
 
 		void removeRedundancy();
-		void stage2( const uint32_t my_val , const uint32_t my_mask , std::unordered_set<MyMmap::const_iterator , MyMmapHash> &rm_list );
-		void applyPetrickMethod();
+		void insertMinterm( const uint32_t my_val , const uint32_t my_mask , MyMmapRmList &rm_list );
+		void petrickMethod();
 
 		MyMmap my_multimap;  // limit to 32 bits, <Key, Value> = <mask, value>
 		std::unordered_set< uint32_t > my_input;  // for storing every inputs

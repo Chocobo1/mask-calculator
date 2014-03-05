@@ -1,7 +1,14 @@
 #include "qmm.hpp"
 
 #include "common.hpp"
-#include <forward_list>
+#include <list>
+
+void printMap( const MyMmap &a , const std::string &b );
+void printList( const std::list< std::unordered_set< size_t > > &a , const std::string &b );
+void printUnorderedSet( const std::unordered_set< size_t > &a , const std::string &b );
+
+void simplify( std::list< std::unordered_set< size_t > > &a );
+void insertAndMutiply( std::list< std::unordered_set< size_t > > &a , const std::unordered_set< size_t > &b );
 
 
 size_t QMM::MyMmapHash::operator()( const MyMmap::const_iterator &a ) const
@@ -35,41 +42,42 @@ void QMM::addNum( const uint32_t a , const uint32_t b )
 void QMM::doCalc()
 {
 	// insert & combine & merge values
-	std::unordered_set< MyMmap::const_iterator , MyMmapHash > rm_list;
+	MyMmapRmList rm_list;
 	for( const auto &i : my_input )
 	{
-		stage2( i , UINT_MAX , rm_list );
+		insertMinterm( i , UINT_MAX , rm_list );
 //		printf("\n");
 	}
-	printf( "my_multimap.size(): %zu\n" , my_multimap.size() );
-	printf( "rm_list.size(): %zu\n" , rm_list.size() );
-
-	fprintf( stderr, "kero1\n" );
+//	printf( "my_multimap.size(): %zu\n" , my_multimap.size() );
+//	printf( "rm_list.size(): %zu\n" , rm_list.size() );
 
 	// filter out used values
-//	size_t c = 1;
 	for( const auto &i : rm_list )
 	{
-//		printf( "%zu: %u/0x%x\n" , c++ , i->second , i->first );
-//		my_multimap.erase( i );
+		my_multimap.erase( i );
 	}
-	//rm_list.clear();
+	rm_list.clear();
 
-	fprintf( stderr, "kero2\n" );
-
-	// remove redundancy
-	removeRedundancy();
+	petrickMethod();
 
 	return;
 }
 
 
-void QMM::stage2( const uint32_t my_val , const uint32_t my_mask , std::unordered_set<MyMmap::const_iterator , MyMmapHash > &rm_list )
+void QMM::insertMinterm( const uint32_t my_val , const uint32_t my_mask , MyMmapRmList &rm_list )
 {
+	const auto t = my_multimap.equal_range( my_mask );
+	for( auto j = t.first ; j != t.second ; ++j )
+	{
+		if( j->second == my_val )  // already exist
+		{
+			return;
+		}
+	}
+
 	const auto my_val_itr = my_multimap.emplace( my_mask , my_val );
 
 //	printf( "\n [s2] start: %u/0x%x\n" , my_val , my_mask );
-	const auto t = my_multimap.equal_range( my_mask );
 	for( auto j = t.first ; j != t.second ; ++j )
 	{
 		// try to merge with other values
@@ -88,7 +96,7 @@ void QMM::stage2( const uint32_t my_val , const uint32_t my_mask , std::unordere
 //			printf( " [s2] rm_list.emplace, %u/0x%x\n" , my_val_itr->second , my_mask );
 
 //			printf( " [s2] recursive\n" );
-			stage2( new_val , new_mask , rm_list );
+			insertMinterm( new_val , new_mask , rm_list );
 		}
 	}
 
@@ -97,28 +105,28 @@ void QMM::stage2( const uint32_t my_val , const uint32_t my_mask , std::unordere
 }
 
 
-void QMM::applyPetrickMethod()
+void QMM::petrickMethod()
 {
 	// swap
 	std::multimap< uint32_t , uint32_t > tmp_map( std::move( my_multimap ) );
 
-	// filter out prime implicant
-	// stage1
+	// filter out obvious prime implicants
 	const auto t = tmp_map.equal_range( UINT_MAX );
 	for( auto i = t.first ; i != t.second ; )
 	{
-		my_multimap.emplace( i->first , i->second );
+		my_multimap.emplace( *i );
 		tmp_map.erase( i++ );
 	}
 
-	// stage2
+	// filter out unobvious prime implicants
+	MyMmapRmList p_i_list;
 	for( const auto &i : my_input )
 	{
 		size_t count = 0;
-		auto itr = tmp_map.end();
-		for( auto j = tmp_map.begin() ; j != tmp_map.end() ; ++j )
+		auto itr = tmp_map.cend();
+		for( auto j = tmp_map.cbegin() ; j != tmp_map.cend() ; ++j )
 		{
-			if( checkMasked( j->second , j->first , i ) )
+			if( checkMasked( j->first , j->second , i ) )
 			{
 				++count;
 				itr = j;
@@ -127,67 +135,202 @@ void QMM::applyPetrickMethod()
 
 		if( count == 1 )
 		{
-			my_multimap.emplace( itr->first , itr->second );
-			tmp_map.erase( itr );
+			p_i_list.emplace( itr );
 		}
 	}
 
-
-	// multiply
-	// stuff in first
-	std::forward_list< std::unordered_set< size_t > > aaa;
-	for( const auto &i : my_input )
+	// handle prime implicants
+	decltype( my_input ) tmp_input( my_input );
+	for( const auto &i : p_i_list )
 	{
+		for( auto j = tmp_input.cbegin() ; j != tmp_input.cend() ; )
+		{
+			if( checkMasked( i->first , i->second , *j ) )
+			{
+				tmp_input.erase( j++ );
+			}
+			else
+				++j;
+		}
+		my_multimap.emplace( std::move( *i ) );
+	}
+
+	// product-of-sums to sum-of-products
+	// stuff in one-by-one
+	std::list< std::unordered_set< size_t > > tmp_list;
+	for( const auto &i : tmp_input )
+	{
+//		printf(" i: %u\n",i);
+//		printList( tmp_list , "a" );
+
 		size_t map_index = 0;
 		std::unordered_set< size_t > tmp_set;
 		for( const auto &j : tmp_map )
 		{
-			if( checkMasked( j.second , j.first , i ) )
+			if( checkMasked( j.first , j.second , i ) )
 			{
 				tmp_set.insert( map_index );
 			}
 			++map_index;
-			printf( "j.second(): %u\n", j.second );
-			printf( "j.first(): %u\n", j.first );
 		}
-//		printf( "tmp_set.size1(): %u\n", tmp_set.size() );
-		aaa.emplace_front( std::move( tmp_set ) );
-//		printf( "tmp_set.size2(): %u\n", tmp_set.size() );
+//		printUnorderedSet( tmp_set , "set" );
+		insertAndMutiply( tmp_list , tmp_set );
+
+//		printList( tmp_list , "b" );
+//		printf(" end\n\n");
+		simplify( tmp_list );
 	}
 
+	// select optimal solution
+	size_t opt_sol_size = UINT_MAX;
+	decltype( tmp_list )::value_type opt_sol;
+	for( auto &i : tmp_list )
+	{
+		if( i.size() < opt_sol_size )
+		{
+			opt_sol.swap( i );
+			opt_sol_size = opt_sol.size();
+		}
+	}
 
-
-
-
-	// reduce
-
-	// choose solution
+	// place solution back
+	size_t counter = 0;
+	for( const auto &i : tmp_map )
+	{
+		if( opt_sol.find( counter ) != opt_sol.end() )
+		{
+			my_multimap.emplace( i );
+		}
+		++counter;
+	}
 
 	return;
 }
 
 
-void QMM::removeRedundancy()
+void insertAndMutiply( std::list< std::unordered_set< size_t > > &a , const std::unordered_set< size_t > &b )
 {
-	for( auto i = my_multimap.begin() ; i != my_multimap.end() ; )
+	if( a.empty() )
 	{
-		bool flag = false;
-		auto j = i; ++j;
-		for( ; j != my_multimap.end() ; ++j )
+		for( const auto &i : b )
 		{
-			if( ( i->first == j->first ) && ( i->second == j->second ) )
-			{
-				flag = true;
-				break;
-			}
+			std::unordered_set< size_t > tmp( { i } );
+			a.emplace_back( std::move( tmp ) );
 		}
-
-		if( flag )
-			my_multimap.erase( i++ );
-		else
-			++i;
+		return;
 	}
 
+	std::list< std::unordered_set< size_t > > tmp_list( std::move( a ) );
+	for( const auto &i : tmp_list )
+	{
+		const std::unordered_set< size_t > base( i.cbegin() , i.cend() );
+		for( const auto &j : b )
+		{
+			auto tmp = base;
+			tmp.emplace( j );
+			a.emplace_back( std::move( tmp ) );
+		}
+	}
+
+	return;
+}
+
+
+void simplify( std::list< std::unordered_set< size_t > > &a )
+{
+	for( auto i = a.cbegin() ; i != a.cend() ; ++i )
+	{
+		for( auto j = a.begin() ; j != a.end() ; )
+		{
+//			printUnorderedSet( *i , "i" );
+//			printUnorderedSet( *j , "j" );
+//			printf("\n\n");
+
+			if( i == j )
+			{
+				++j;
+//				printf("i, j same iterator\n");
+				continue;
+			}
+
+			if( i->size() < j->size() )
+			{
+//				printf("i->size() < j->size()\n");
+				bool merge_flag = true;
+				for( const auto &k : *i )
+				{
+					if( j->find( k ) == j->end() )
+					{
+						merge_flag = false;
+//						printf("merge_flag == false\n");
+						break;
+					}
+				}
+				if( merge_flag )
+				{
+					a.erase( j++ );
+//					printf("merge_flag == true\n");
+					continue;
+				}
+			}
+			else if( i->size() == j->size() )
+			{
+//				printf("i->size() == j->size()\n");
+				if( ( *i ) == ( *j ) )
+				{
+//					printf("*i == *j\n");
+					a.erase( j++ );
+					continue;
+				}
+			}
+			else if( i->size() > j->size() )
+			{
+//				printf("i->size() > j->size()\n");
+			}
+
+			++j;
+		}
+	}
+
+	return;
+}
+
+
+void printList( const std::list< std::unordered_set< size_t > > &a , const std::string &b )
+{
+	if( !b.empty() )
+		printf( "%s:\n" , b.c_str() );
+	for( const auto &i : a )
+	{
+		printUnorderedSet( i , "" );
+	}
+	printf( "\n" );
+	return;
+}
+
+
+void printMap( const MyMmap &a , const std::string &b )
+{
+	if( !b.empty() )
+		printf( "%s:\n" , b.c_str() );
+	for( const auto &i : a )
+	{
+		printf( "%u / %x\n" , i.second , i.first );
+	}
+	printf( "\n" );
+	return;
+}
+
+
+void printUnorderedSet( const std::unordered_set< size_t > &a , const std::string &b )
+{
+	if( !b.empty() )
+		printf( "%s:\n" , b.c_str() );
+	for( const auto &i : a )
+	{
+		printf( " %zu" , i );
+	}
+	printf( "\n" );
 	return;
 }
 
