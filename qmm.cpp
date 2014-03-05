@@ -51,7 +51,7 @@ void QMM::doCalc()
 //	printf( "my_multimap.size(): %zu\n" , my_multimap.size() );
 //	printf( "rm_list.size(): %zu\n" , rm_list.size() );
 
-	// filter out used values
+	// filter out combined minterms
 	for( const auto &i : rm_list )
 	{
 		my_multimap.erase( i );
@@ -109,12 +109,13 @@ void QMM::petrickMethod()
 {
 	// swap
 	std::multimap< uint32_t , uint32_t > tmp_map( std::move( my_multimap ) );
+	my_multimap.clear();
 
 	// filter out obvious prime implicants
 	const auto t = tmp_map.equal_range( UINT_MAX );
 	for( auto i = t.first ; i != t.second ; )
 	{
-		my_multimap.emplace( *i );
+		my_multimap.emplace( std::move( *i ) );
 		tmp_map.erase( i++ );
 	}
 
@@ -135,7 +136,7 @@ void QMM::petrickMethod()
 
 		if( count == 1 )
 		{
-			p_i_list.emplace( itr );
+			p_i_list.emplace( std::move( itr ) );
 		}
 	}
 
@@ -153,6 +154,7 @@ void QMM::petrickMethod()
 				++j;
 		}
 		my_multimap.emplace( std::move( *i ) );
+		tmp_map.erase( i );
 	}
 
 	// product-of-sums to sum-of-products
@@ -221,6 +223,7 @@ void insertAndMutiply( std::list< std::unordered_set< size_t > > &a , const std:
 	}
 
 	std::list< std::unordered_set< size_t > > tmp_list( std::move( a ) );
+	a.clear();
 	for( const auto &i : tmp_list )
 	{
 		const std::unordered_set< size_t > base( i.cbegin() , i.cend() );
