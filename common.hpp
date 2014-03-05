@@ -5,6 +5,6 @@
 
 
 bool diffOneBit( const uint32_t a, const uint32_t b );
-bool checkMasked( const uint32_t a , const uint32_t a_mask , const uint32_t b );
+bool checkMasked( const uint32_t mask , const uint32_t a , const uint32_t b );
 
 #endif

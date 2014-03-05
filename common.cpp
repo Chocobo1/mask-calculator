@@ -1,9 +1,9 @@
 #include "common.hpp"
 
 
-bool checkMasked( const uint32_t a , const uint32_t a_mask , const uint32_t b )
+bool checkMasked( const uint32_t mask , const uint32_t a , const uint32_t b )
 {
-	if( ( a & a_mask ) == ( b & a_mask ) )
+	if( ( a & mask ) == ( b & mask ) )
 	{
 		return true;
 	}

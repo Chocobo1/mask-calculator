@@ -50,7 +50,7 @@ void MyAlg::calcMask( const uint32_t my_val , const uint32_t my_mask )
 			const auto other_val = j->second;
 //			printf( "[s1] try merge: %u/0x%x\n" , other_val , now_mask );
 
-			if( checkMasked( other_val , now_mask , my_val ) )
+			if( checkMasked( now_mask , other_val , my_val ) )
 			{
 				// can be merged with existing mask
 //				printf( "[s1] merged into: %u/0x%x\n" , other_val , now_mask );
