@@ -5,7 +5,7 @@
 #include "qmm.hpp"
 
 
-void printUsage( const char *a );
+void printUsage( const std::string &a );
 void printArg( const int argc , char *argv[] );
 
 
@@ -66,14 +66,14 @@ int main( const int argc , char *argv[] )
 }
 
 
-void printUsage( const char *a )
+void printUsage( const std::string &a )
 {
 	fprintf( stderr , "\n" );
 	fprintf( stderr , "Mask calculator\n\n" );
-	fprintf( stderr , "Usage: %s port1 port2 [...]\n" , a );
-	fprintf( stderr , "Example1: %s 50 100\n" , a );
-	fprintf( stderr , "Example2: %s 50-100\n" , a );
-	fprintf( stderr , "Example3: %s 50 100 1000-1020\n\n" , a );
+	fprintf( stderr , "Usage: %s port1 port2 [...]\n" , a.c_str() );
+	fprintf( stderr , "Example1: %s 50 100\n" , a.c_str() );
+	fprintf( stderr , "Example2: %s 50-100\n" , a.c_str() );
+	fprintf( stderr , "Example3: %s 50 100 1000-1020\n\n" , a.c_str() );
 	return;
 }
 
