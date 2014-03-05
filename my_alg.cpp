@@ -36,7 +36,7 @@ void MyAlg::calcMask( const uint32_t my_val , const uint32_t my_mask )
 	// stage 1, check if covered by existing mask
 
 //	printf( "\n[s1] start, %u/0x%x\n" , my_val , my_mask );
-	for( auto i = my_multimap.begin() ; i != my_multimap.end() ; i = my_multimap.upper_bound( i->first ) )
+	for( auto i = my_multimap.cbegin() ; i != my_multimap.cend() ; i = my_multimap.upper_bound( i->first ) )
 	{
 		const uint32_t now_mask = i->first;
 //		printf( "[s1] now_mask: 0x%x\n" , now_mask );
