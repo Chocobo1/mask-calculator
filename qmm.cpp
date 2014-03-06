@@ -2,10 +2,6 @@
 
 #include "common.hpp"
 
-void printMap( const MyMmap &a , const std::string &b );
-void printList( const std::list< std::unordered_set< size_t > > &a , const std::string &b );
-void printUnorderedSet( const std::unordered_set< size_t > &a , const std::string &b );
-
 
 size_t QMM::MyMmapHash::operator()( const MyMmap::const_iterator &a ) const
 {
@@ -269,7 +265,21 @@ void QMM::simplify( std::list< std::unordered_set< size_t > > &a )
 }
 
 
-void printList( const std::list< std::unordered_set< size_t > > &a , const std::string &b )
+const MyMmap *QMM::getOutput() const
+{
+	return &my_multimap;
+}
+
+
+void QMM::reset()
+{
+	my_multimap.clear();
+	my_input.clear();
+	return;
+}
+
+
+void QMM::printList( const std::list< std::unordered_set< size_t > > &a , const std::string &b )
 {
 	if( !b.empty() )
 		printf( "%s:\n" , b.c_str() );
@@ -282,7 +292,7 @@ void printList( const std::list< std::unordered_set< size_t > > &a , const std::
 }
 
 
-void printMap( const MyMmap &a , const std::string &b )
+void QMM::printMap( const MyMmap &a , const std::string &b )
 {
 	if( !b.empty() )
 		printf( "%s:\n" , b.c_str() );
@@ -295,7 +305,7 @@ void printMap( const MyMmap &a , const std::string &b )
 }
 
 
-void printUnorderedSet( const std::unordered_set< size_t > &a , const std::string &b )
+void QMM::printUnorderedSet( const std::unordered_set< size_t > &a , const std::string &b )
 {
 	if( !b.empty() )
 		printf( "%s:\n" , b.c_str() );
@@ -304,19 +314,5 @@ void printUnorderedSet( const std::unordered_set< size_t > &a , const std::strin
 		printf( " %zu" , i );
 	}
 	printf( "\n" );
-	return;
-}
-
-
-const MyMmap *QMM::getOutput() const
-{
-	return &my_multimap;
-}
-
-
-void QMM::reset()
-{
-	my_multimap.clear();
-	my_input.clear();
 	return;
 }

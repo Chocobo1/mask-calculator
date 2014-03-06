@@ -33,6 +33,10 @@ class QMM
 		void simplify( std::list< std::unordered_set< size_t > > &a );
 		void insertAndMutiply( std::list< std::unordered_set< size_t > > &a , const std::unordered_set< size_t > &b );
 
+		void printMap( const MyMmap &a , const std::string &b );
+		void printList( const std::list< std::unordered_set< size_t > > &a , const std::string &b );
+		void printUnorderedSet( const std::unordered_set< size_t > &a , const std::string &b );
+
 		MyMmap my_multimap;  // limit to 32 bits, <Key, Value> = <mask, value>
 		std::unordered_set< uint32_t > my_input;  // for storing every inputs
 };
