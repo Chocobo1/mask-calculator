@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <map>
+#include <list>
 #include <unordered_set>
 
 
@@ -27,9 +28,10 @@ class QMM
 		};
 		typedef std::unordered_set<MyMmap::const_iterator , MyMmapHash> MyMmapRmList;
 
-		void removeRedundancy();
 		void insertMinterm( const uint32_t my_val , const uint32_t my_mask , MyMmapRmList &rm_list );
 		void petrickMethod();
+		void simplify( std::list< std::unordered_set< size_t > > &a );
+		void insertAndMutiply( std::list< std::unordered_set< size_t > > &a , const std::unordered_set< size_t > &b );
 
 		MyMmap my_multimap;  // limit to 32 bits, <Key, Value> = <mask, value>
 		std::unordered_set< uint32_t > my_input;  // for storing every inputs

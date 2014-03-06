@@ -1,14 +1,10 @@
 #include "qmm.hpp"
 
 #include "common.hpp"
-#include <list>
 
 void printMap( const MyMmap &a , const std::string &b );
 void printList( const std::list< std::unordered_set< size_t > > &a , const std::string &b );
 void printUnorderedSet( const std::unordered_set< size_t > &a , const std::string &b );
-
-void simplify( std::list< std::unordered_set< size_t > > &a );
-void insertAndMutiply( std::list< std::unordered_set< size_t > > &a , const std::unordered_set< size_t > &b );
 
 
 size_t QMM::MyMmapHash::operator()( const MyMmap::const_iterator &a ) const
@@ -210,7 +206,7 @@ void QMM::petrickMethod()
 }
 
 
-void insertAndMutiply( std::list< std::unordered_set< size_t > > &a , const std::unordered_set< size_t > &b )
+void QMM::insertAndMutiply( std::list< std::unordered_set< size_t > > &a , const std::unordered_set< size_t > &b )
 {
 	if( a.empty() )
 	{
@@ -239,7 +235,7 @@ void insertAndMutiply( std::list< std::unordered_set< size_t > > &a , const std:
 }
 
 
-void simplify( std::list< std::unordered_set< size_t > > &a )
+void QMM::simplify( std::list< std::unordered_set< size_t > > &a )
 {
 	for( auto i = a.cbegin() ; i != a.cend() ; ++i )
 	{
