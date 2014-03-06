@@ -142,7 +142,7 @@ void QMM::petrickMethod()
 
 	// product-of-sums to sum-of-products
 	// stuff in one-by-one
-	std::list< std::unordered_set< size_t > > tmp_list;
+	std::list< MySolSet > tmp_list;
 	for( const auto &i : tmp_input )
 	{
 		size_t map_index = 0;
@@ -187,7 +187,7 @@ void QMM::petrickMethod()
 }
 
 
-void QMM::insertAndMutiply( std::list< std::unordered_set< size_t > > &a , const std::unordered_set< size_t > &b )
+void QMM::insertAndMutiply( std::list< MySolSet > &a , const std::unordered_set< size_t > &b )
 {
 	if( a.empty() )
 	{
@@ -198,7 +198,7 @@ void QMM::insertAndMutiply( std::list< std::unordered_set< size_t > > &a , const
 		return;
 	}
 
-	std::list< std::unordered_set< size_t > > tmp_list( std::move( a ) );
+	std::list< MySolSet > tmp_list( std::move( a ) );
 	a.clear();
 	for( const auto &i : tmp_list )
 	{
@@ -215,7 +215,7 @@ void QMM::insertAndMutiply( std::list< std::unordered_set< size_t > > &a , const
 }
 
 
-void QMM::simplify( std::list< std::unordered_set< size_t > > &a )
+void QMM::simplify( std::list< MySolSet > &a )
 {
 	for( auto i = a.cbegin() ; i != a.cend() ; ++i )
 	{
@@ -278,7 +278,7 @@ void QMM::reset()
 }
 
 
-void QMM::printList( const std::list< std::unordered_set< size_t > > &a , const std::string &b )
+void QMM::printList( const std::list< MySolSet > &a , const std::string &b )
 {
 	if( !b.empty() )
 		printf( "%s:\n" , b.c_str() );
