@@ -12,7 +12,6 @@ void printArg( const int argc , char *argv[] );
 int main( const int argc , char *argv[] )
 {
 	// input handling
-//	printArg( argc , argv );
 	if( argc < 2 )
 	{
 		printUsage( argv[0] );
@@ -41,8 +40,6 @@ int main( const int argc , char *argv[] )
 
 			const uint32_t a = strtoul( argv[i] , NULL , 0 );
 			const uint32_t b = strtoul( if_range + 1 , NULL , 0 );
-//			printf("a: %c %u\n" , argv[i][0] , a );
-//			printf("b: %c %u\n" , *(if_range + 1) , b );
 			my_calc.addNum( a, b );
 		}
 		else

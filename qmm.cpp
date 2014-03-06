@@ -42,10 +42,7 @@ void QMM::doCalc()
 	for( const auto &i : my_input )
 	{
 		insertMinterm( i , UINT_MAX , rm_list );
-//		printf("\n");
 	}
-//	printf( "my_multimap.size(): %zu\n" , my_multimap.size() );
-//	printf( "rm_list.size(): %zu\n" , rm_list.size() );
 
 	// filter out combined minterms
 	for( const auto &i : rm_list )
@@ -73,13 +70,11 @@ void QMM::insertMinterm( const uint32_t my_val , const uint32_t my_mask , MyMmap
 
 	const auto my_val_itr = my_multimap.emplace( my_mask , my_val );
 
-//	printf( "\n [s2] start: %u/0x%x\n" , my_val , my_mask );
 	for( auto j = t.first ; j != t.second ; ++j )
 	{
 		// try to merge with other values
 		const auto other_val = j->second;
 		const bool if_merge = diffOneBit( my_val , other_val );
-//		printf( " [s2] other_val: %u/0x%x, result: %d\n" , other_val , my_mask , if_merge );
 		if( if_merge )
 		{
 			const uint32_t new_mask = my_mask & ( ~( my_val xor other_val ) );
@@ -88,15 +83,11 @@ void QMM::insertMinterm( const uint32_t my_val , const uint32_t my_mask , MyMmap
 			// record used values
 			rm_list.emplace( j );
 			rm_list.emplace( my_val_itr );
-//			printf( " [s2] rm_list.emplace, %u/0x%x\n" , j->second , my_mask );
-//			printf( " [s2] rm_list.emplace, %u/0x%x\n" , my_val_itr->second , my_mask );
 
-//			printf( " [s2] recursive\n" );
 			insertMinterm( new_val , new_mask , rm_list );
 		}
 	}
 
-//	printf( " [s2] end\n" );
 	return;
 }
 
@@ -158,9 +149,6 @@ void QMM::petrickMethod()
 	std::list< std::unordered_set< size_t > > tmp_list;
 	for( const auto &i : tmp_input )
 	{
-//		printf(" i: %u\n",i);
-//		printList( tmp_list , "a" );
-
 		size_t map_index = 0;
 		std::unordered_set< size_t > tmp_set;
 		for( const auto &j : tmp_map )
@@ -171,11 +159,8 @@ void QMM::petrickMethod()
 			}
 			++map_index;
 		}
-//		printUnorderedSet( tmp_set , "set" );
 		insertAndMutiply( tmp_list , tmp_set );
 
-//		printList( tmp_list , "b" );
-//		printf(" end\n\n");
 		simplify( tmp_list );
 	}
 
@@ -241,50 +226,39 @@ void QMM::simplify( std::list< std::unordered_set< size_t > > &a )
 	{
 		for( auto j = a.begin() ; j != a.end() ; )
 		{
-//			printUnorderedSet( *i , "i" );
-//			printUnorderedSet( *j , "j" );
-//			printf("\n\n");
-
 			if( i == j )
 			{
 				++j;
-//				printf("i, j same iterator\n");
 				continue;
 			}
 
 			if( i->size() < j->size() )
 			{
-//				printf("i->size() < j->size()\n");
 				bool merge_flag = true;
 				for( const auto &k : *i )
 				{
 					if( j->find( k ) == j->end() )
 					{
 						merge_flag = false;
-//						printf("merge_flag == false\n");
 						break;
 					}
 				}
 				if( merge_flag )
 				{
 					a.erase( j++ );
-//					printf("merge_flag == true\n");
 					continue;
 				}
 			}
 			else if( i->size() == j->size() )
 			{
-//				printf("i->size() == j->size()\n");
 				if( ( *i ) == ( *j ) )
 				{
-//					printf("*i == *j\n");
 					a.erase( j++ );
 					continue;
 				}
 			}
 			else if( i->size() > j->size() )
 			{
-//				printf("i->size() > j->size()\n");
 			}
 
 			++j;
