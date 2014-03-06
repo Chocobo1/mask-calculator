@@ -193,8 +193,7 @@ void QMM::insertAndMutiply( std::list< std::unordered_set< size_t > > &a , const
 	{
 		for( const auto &i : b )
 		{
-			std::unordered_set< size_t > tmp( { i } );
-			a.emplace_back( std::move( tmp ) );
+			a.emplace_back( i );
 		}
 		return;
 	}
@@ -203,7 +202,7 @@ void QMM::insertAndMutiply( std::list< std::unordered_set< size_t > > &a , const
 	a.clear();
 	for( const auto &i : tmp_list )
 	{
-		const std::unordered_set< size_t > base( i.cbegin() , i.cend() );
+		const std::unordered_set< size_t > base( i );
 		for( const auto &j : b )
 		{
 			auto tmp = base;
