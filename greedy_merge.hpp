@@ -1,11 +1,11 @@
-#ifndef my_alg_HPP
-#define my_alg_HPP
+#ifndef greedymerge_HPP
+#define greedymerge_HPP
 
 #include <map>
 #include <cstdint>
 
 
-class MyAlg
+class GreedyMerge
 {
 	public:
 		void addNum( const uint32_t a );

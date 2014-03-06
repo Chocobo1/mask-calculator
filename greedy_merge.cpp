@@ -1,16 +1,16 @@
-#include "my_alg.hpp"
+#include "greedy_merge.hpp"
 
 #include "common.hpp"
 
 
-void MyAlg::addNum( const uint32_t a )
+void GreedyMerge::addNum( const uint32_t a )
 {
 	calcMask( a , UINT_MAX );
 	return;
 }
 
 
-void MyAlg::addNum( const uint32_t a , const uint32_t b )
+void GreedyMerge::addNum( const uint32_t a , const uint32_t b )
 {
 	// add a range of numbers [a, b]
 	const uint32_t start = std::min( a , b );
@@ -24,14 +24,14 @@ void MyAlg::addNum( const uint32_t a , const uint32_t b )
 }
 
 
-void MyAlg::doCalc()
+void GreedyMerge::doCalc()
 {
 	// nothing to do
 	return;
 }
 
 
-void MyAlg::calcMask( const uint32_t my_val , const uint32_t my_mask )
+void GreedyMerge::calcMask( const uint32_t my_val , const uint32_t my_mask )
 {
 	// stage 1, check if covered by existing mask
 
@@ -67,7 +67,7 @@ void MyAlg::calcMask( const uint32_t my_val , const uint32_t my_mask )
 }
 
 
-void MyAlg::stage2( const uint32_t my_val , const uint32_t my_mask )
+void GreedyMerge::stage2( const uint32_t my_val , const uint32_t my_mask )
 {
 	// stage2, try to merge with other values which have the same mask
 
@@ -103,13 +103,13 @@ void MyAlg::stage2( const uint32_t my_val , const uint32_t my_mask )
 }
 
 
-const std::multimap< uint32_t , uint32_t > *MyAlg::getOutput() const
+const std::multimap< uint32_t , uint32_t > *GreedyMerge::getOutput() const
 {
 	return &my_multimap;
 }
 
 
-void MyAlg::reset()
+void GreedyMerge::reset()
 {
 	my_multimap.clear();
 	return;

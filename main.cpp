@@ -1,7 +1,7 @@
 #include <cstdio>
 #include <cstring>
 
-#include "my_alg.hpp"
+#include "greedy_merge.hpp"
 #include "qmm.hpp"
 
 
@@ -19,7 +19,8 @@ int main( const int argc , char *argv[] )
 		exit( EXIT_FAILURE );
 	}
 
-	QMM my_calc;
+	GreedyMerge my_calc;
+//	QMM my_calc;
 
 	// get/sort numbers
 	for( auto i = 1 ; i < argc ; ++i )
