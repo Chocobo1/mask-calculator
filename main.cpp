@@ -61,6 +61,8 @@ int main( const int argc , char *argv[] )
 		for( const auto &j : i.second )
 			printf( "%zu: %u / %x\n" , counter++ , j , i.first );
 	}
+
+//	system( "pause" );
 	return 0;
 }
 

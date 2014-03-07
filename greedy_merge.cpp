@@ -71,6 +71,10 @@ void GreedyMerge::stage2( const uint32_t my_val , const uint32_t my_mask )
 
 			// remove merged values
 			tmp_set.erase( other_val );
+			/*if( tmp_set.empty() )  // took much more CPU cycles, but does not save significant memory
+			{
+				my_map.erase( my_mask );
+			}*/
 
 			stage2( new_val , new_mask );
 			return;
