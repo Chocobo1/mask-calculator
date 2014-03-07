@@ -8,7 +8,7 @@
 
 
 typedef std::multimap< uint32_t , uint32_t > MyMmap;
-typedef std::unordered_set< size_t > MySolSet;
+typedef std::unordered_set< size_t > MyUnorderedSet;
 
 
 class QMM
@@ -31,12 +31,12 @@ class QMM
 
 		void insertMinterm( const uint32_t my_val , const uint32_t my_mask , MyMmapRmList &rm_list );
 		void petrickMethod();
-		void simplify( std::list< MySolSet > &a );
-		void insertAndMutiply( std::list< MySolSet > &a , const std::unordered_set< size_t > &b );
+		void simplify( std::list< MyUnorderedSet > &a );
+		void insertAndMutiply( std::list< MyUnorderedSet > &a , const MyUnorderedSet &b );
 
 		void printMap( const MyMmap &a , const std::string &b ) const;
-		void printList( const std::list< MySolSet > &a , const std::string &b ) const;
-		void printUnorderedSet( const std::unordered_set< size_t > &a , const std::string &b ) const;
+		void printList( const std::list< MyUnorderedSet > &a , const std::string &b ) const;
+		void printUnorderedSet( const MyUnorderedSet &a , const std::string &b ) const;
 
 		MyMmap my_multimap;  // limit to 32 bits, <Key, Value> = <mask, value>
 		std::unordered_set< uint32_t > my_input;  // for storing every inputs
