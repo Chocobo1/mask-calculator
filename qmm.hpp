@@ -34,9 +34,9 @@ class QMM
 		void simplify( std::list< MySolSet > &a );
 		void insertAndMutiply( std::list< MySolSet > &a , const std::unordered_set< size_t > &b );
 
-		void printMap( const MyMmap &a , const std::string &b );
-		void printList( const std::list< MySolSet > &a , const std::string &b );
-		void printUnorderedSet( const std::unordered_set< size_t > &a , const std::string &b );
+		void printMap( const MyMmap &a , const std::string &b ) const;
+		void printList( const std::list< MySolSet > &a , const std::string &b ) const;
+		void printUnorderedSet( const std::unordered_set< size_t > &a , const std::string &b ) const;
 
 		MyMmap my_multimap;  // limit to 32 bits, <Key, Value> = <mask, value>
 		std::unordered_set< uint32_t > my_input;  // for storing every inputs

@@ -278,7 +278,7 @@ void QMM::reset()
 }
 
 
-void QMM::printList( const std::list< MySolSet > &a , const std::string &b )
+void QMM::printList( const std::list< MySolSet > &a , const std::string &b ) const
 {
 	if( !b.empty() )
 		printf( "%s:\n" , b.c_str() );
@@ -291,7 +291,7 @@ void QMM::printList( const std::list< MySolSet > &a , const std::string &b )
 }
 
 
-void QMM::printMap( const MyMmap &a , const std::string &b )
+void QMM::printMap( const MyMmap &a , const std::string &b ) const
 {
 	if( !b.empty() )
 		printf( "%s:\n" , b.c_str() );
@@ -304,7 +304,7 @@ void QMM::printMap( const MyMmap &a , const std::string &b )
 }
 
 
-void QMM::printUnorderedSet( const std::unordered_set< size_t > &a , const std::string &b )
+void QMM::printUnorderedSet( const std::unordered_set< size_t > &a , const std::string &b ) const
 {
 	if( !b.empty() )
 		printf( "%s:\n" , b.c_str() );
