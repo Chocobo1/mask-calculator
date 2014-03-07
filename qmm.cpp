@@ -91,7 +91,7 @@ void QMM::insertMinterm( const uint32_t my_val , const uint32_t my_mask , MyMmap
 void QMM::petrickMethod()
 {
 	// swap
-	std::multimap< uint32_t , uint32_t > tmp_map( std::move( my_multimap ) );
+	MyMmap tmp_map( std::move( my_multimap ) );
 	my_multimap.clear();
 
 	// filter out obvious prime implicants
