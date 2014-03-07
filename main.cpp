@@ -58,7 +58,8 @@ int main( const int argc , char *argv[] )
 	printf( "\nvalue(dec) / mask(hex)\n" );
 	for( const auto &i : ( *results ) )
 	{
-		printf( "%zu: %u / %x\n" , counter++ , i.second , i.first );
+		for( const auto &j : i.second )
+			printf( "%zu: %u / %x\n" , counter++ , j , i.first );
 	}
 	return 0;
 }

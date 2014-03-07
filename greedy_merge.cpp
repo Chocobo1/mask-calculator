@@ -33,28 +33,23 @@ void GreedyMerge::doCalc()
 
 void GreedyMerge::calcMask( const uint32_t my_val , const uint32_t my_mask )
 {
-	// stage 1, check if covered by existing mask
-
-	for( auto i = my_multimap.cbegin() ; i != my_multimap.cend() ; i = my_multimap.upper_bound( i->first ) )
+	// stage 1, check if can be covered by existing value
+	for( const auto &i : my_map )
 	{
-		const uint32_t now_mask = i->first;
-
+		const uint32_t &now_mask = i.first;
 		if( now_mask == my_mask )  // skip same mask
 			continue;
 
-		const auto t = my_multimap.equal_range( now_mask );
-		for( auto j = t.first ; j != t.second ; ++j )  // for each same mask values
+		const GreedyMerge::MyUnorderedSet &tmp_set = i.second;
+		for( const auto &j : tmp_set )  // for each same mask values
 		{
-			const auto other_val = j->second;
-
-			if( checkMasked( now_mask , other_val , my_val ) )
+			if( checkMasked( now_mask , my_val , j ) )
 			{
 				// can be merged with existing mask
 				return;
 			}
 		}
 	}
-//	printf( "[s1] end\n" );
 
 	stage2( my_val , my_mask );
 
@@ -64,13 +59,10 @@ void GreedyMerge::calcMask( const uint32_t my_val , const uint32_t my_mask )
 
 void GreedyMerge::stage2( const uint32_t my_val , const uint32_t my_mask )
 {
-	// stage2, try to merge with other values which have the same mask
-
-	const auto t = my_multimap.equal_range( my_mask );
-	for( auto j = t.first ; j != t.second ; ++j )
+	// stage2, try to merge with other value which have the same mask
+	GreedyMerge::MyUnorderedSet &tmp_set = my_map[ my_mask ];
+	for( const auto &other_val : tmp_set )
 	{
-		// try to merge with other values
-		const auto other_val = j->second;
 		const bool if_merge = diffOneBit( my_val , other_val );
 		if( if_merge )
 		{
@@ -78,29 +70,28 @@ void GreedyMerge::stage2( const uint32_t my_val , const uint32_t my_mask )
 			const uint32_t new_val = std::min( my_val , other_val );
 
 			// remove merged values
-			my_multimap.erase( j );
+			tmp_set.erase( other_val );
 
 			stage2( new_val , new_mask );
-
 			return;
 		}
 	}
 
 	// cannot merge with any other values
-	my_multimap.emplace( my_mask , my_val );
+	tmp_set.emplace( my_val );
 
 	return;
 }
 
 
-const std::multimap< uint32_t , uint32_t > *GreedyMerge::getOutput() const
+const GreedyMerge::MyMap *GreedyMerge::getOutput() const
 {
-	return &my_multimap;
+	return &my_map;
 }
 
 
 void GreedyMerge::reset()
 {
-	my_multimap.clear();
+	my_map.clear();
 	return;
 }
