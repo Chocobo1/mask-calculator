@@ -160,7 +160,7 @@ void QMM::petrickMethod()
 		simplify( tmp_list );
 	}
 
-	// select optimal solution
+	// select solution
 	size_t opt_sol_size = UINT_MAX;
 	decltype( tmp_list )::value_type opt_sol;
 	for( auto &i : tmp_list )
