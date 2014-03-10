@@ -3,12 +3,6 @@
 #include "common.hpp"
 
 
-size_t QMM::MyMmapHash::operator()( const MyMmap::const_iterator &a ) const
-{
-	return std::hash< const MyMmap::value_type * >()( &( *a ) );
-}
-
-
 void QMM::addNum( const uint32_t a )
 {
 	my_input.emplace( a );
@@ -33,17 +27,35 @@ void QMM::addNum( const uint32_t a , const uint32_t b )
 
 void QMM::doCalc()
 {
-	// insert & combine & merge values
-	MyMmapRmList rm_list;
+	// insert & combine minterms
+	MyMapRmList rm_list;
+
+	my_multimap[ UINT_MAX ].reserve( my_input.size() );  // save CPU cycles when input is many
+	rm_list[ UINT_MAX ].reserve( my_input.size() );
+
 	for( const auto &i : my_input )
 	{
 		insertMinterm( i , UINT_MAX , rm_list );
 	}
 
-	// filter out combined minterms
+	// remove combined minterms
 	for( const auto &i : rm_list )
 	{
-		my_multimap.erase( i );
+		const auto &rm_set = i.second;
+
+		const auto &tmp_set_itr = my_multimap.find( i.first );
+		auto &tmp_set = tmp_set_itr->second;
+		if( tmp_set.size() == rm_set.size() )
+		{
+			my_multimap.erase( tmp_set_itr );
+		}
+		else
+		{
+			for( const auto &j : rm_set )
+			{
+				tmp_set.erase( j );
+			}
+		}
 	}
 	rm_list.clear();
 
@@ -53,23 +65,16 @@ void QMM::doCalc()
 }
 
 
-void QMM::insertMinterm( const uint32_t my_val , const uint32_t my_mask , MyMmapRmList &rm_list )
+void QMM::insertMinterm( const uint32_t my_val , const uint32_t my_mask , MyMapRmList &rm_list )
 {
-	const auto t = my_multimap.equal_range( my_mask );
-	for( auto j = t.first ; j != t.second ; ++j )
-	{
-		if( j->second == my_val )  // already exist
-		{
-			return;
-		}
-	}
+	auto &tmp_set = my_multimap[ my_mask ];
+	if( tmp_set.find( my_val ) != tmp_set.end() )  // has already been genereated
+		return;
+	tmp_set.emplace( my_val );
 
-	const auto my_val_itr = my_multimap.emplace( my_mask , my_val );
-
-	for( auto j = t.first ; j != t.second ; ++j )
+	for( const auto &other_val : tmp_set )
 	{
 		// try to merge with other values
-		const auto other_val = j->second;
 		const bool if_merge = diffOneBit( my_val , other_val );
 		if( if_merge )
 		{
@@ -77,8 +82,9 @@ void QMM::insertMinterm( const uint32_t my_val , const uint32_t my_mask , MyMmap
 			const uint32_t new_val = std::min( my_val , other_val );
 
 			// record used values
-			rm_list.emplace( j );
-			rm_list.emplace( my_val_itr );
+			auto &rm_set = rm_list[ my_mask ];
+			rm_set.emplace( my_val );
+			rm_set.emplace( other_val );
 
 			insertMinterm( new_val , new_mask , rm_list );
 		}
@@ -91,35 +97,36 @@ void QMM::insertMinterm( const uint32_t my_val , const uint32_t my_mask , MyMmap
 void QMM::petrickMethod()
 {
 	// swap
-	MyMmap tmp_map( std::move( my_multimap ) );
-	my_multimap.clear();
+	QMM::MyMap tmp_map;
+	tmp_map.swap( my_multimap );
 
 	// filter out obvious prime implicants
-	const auto t = tmp_map.equal_range( UINT_MAX );
-	for( auto i = t.first ; i != t.second ; )
-	{
-		my_multimap.emplace( std::move( *i ) );
-		tmp_map.erase( i++ );
-	}
+	my_multimap[ UINT_MAX ] = std::move( tmp_map[ UINT_MAX ] );
+	tmp_map.erase( UINT_MAX );
 
 	// filter out unobvious prime implicants
-	MyMmapRmList p_i_list;
+	MyMapRmList p_i_list;
 	for( const auto &i : my_input )
 	{
 		size_t count = 0;
-		auto itr = tmp_map.cend();
-		for( auto j = tmp_map.cbegin() ; j != tmp_map.cend() ; ++j )
+		auto mask = 0;
+		auto val = 0;
+		for( const auto &j : tmp_map )
 		{
-			if( checkMasked( j->first , j->second , i ) )
+			for( const auto &k : j.second )
 			{
-				++count;
-				itr = j;
+				if( checkMasked( j.first , i , k ) )
+				{
+					++count;
+					mask = j.first;
+					val = k;
+				}
 			}
 		}
 
 		if( count == 1 )
 		{
-			p_i_list.emplace( std::move( itr ) );
+			p_i_list[ mask ].emplace( val );
 		}
 	}
 
@@ -127,33 +134,39 @@ void QMM::petrickMethod()
 	decltype( my_input ) tmp_input( my_input );
 	for( const auto &i : p_i_list )
 	{
-		for( auto j = tmp_input.cbegin() ; j != tmp_input.cend() ; )
+		auto &tmp_set = tmp_map[ i.first ];
+		for( const auto &j : i.second )
 		{
-			if( checkMasked( i->first , i->second , *j ) )
+			for( auto k = tmp_input.cbegin() ; k != tmp_input.cend() ; )
 			{
-				tmp_input.erase( j++ );
+				if( checkMasked( i.first , j , *k ) )
+					tmp_input.erase( k++ );
+				else
+					++k;
 			}
-			else
-				++j;
+			tmp_set.erase( j );
 		}
-		my_multimap.emplace( std::move( *i ) );
-		tmp_map.erase( i );
+		my_multimap.emplace( std::move( i ) );
 	}
+	p_i_list.clear();
 
 	// product-of-sums to sum-of-products
 	// stuff in one-by-one
-	std::list< MyUnorderedSet > tmp_list;
+	std::list< QMM::MySolSet > tmp_list;
 	for( const auto &i : tmp_input )
 	{
-		size_t map_index = 0;
-		std::unordered_set< size_t > tmp_set;
+		QMM::MySolSet::key_type map_index = 0;
+		QMM::MySolSet tmp_set;
 		for( const auto &j : tmp_map )
 		{
-			if( checkMasked( j.first , j.second , i ) )
+			for( const auto &k : j.second )
 			{
-				tmp_set.insert( map_index );
+				if( checkMasked( j.first , i , k ) )
+				{
+					tmp_set.emplace( map_index );
+				}
+				++map_index;
 			}
-			++map_index;
 		}
 		insertAndMutiply( tmp_list , tmp_set );
 
@@ -161,7 +174,7 @@ void QMM::petrickMethod()
 	}
 
 	// select solution
-	size_t opt_sol_size = UINT_MAX;
+	auto opt_sol_size = UINT_MAX;
 	decltype( tmp_list )::value_type opt_sol;
 	for( auto &i : tmp_list )
 	{
@@ -173,21 +186,26 @@ void QMM::petrickMethod()
 	}
 
 	// place solution back
-	size_t counter = 0;
+	QMM::MySolSet::key_type counter = 0;
 	for( const auto &i : tmp_map )
 	{
-		if( opt_sol.find( counter ) != opt_sol.end() )
+		auto &target_set = my_multimap[ i.first ];
+		for( const auto &j : i.second )
 		{
-			my_multimap.emplace( i );
+			if( opt_sol.find( counter ) != opt_sol.end() )
+			{
+				target_set.emplace( j );
+			}
+			++counter;
 		}
-		++counter;
 	}
+	tmp_map.clear();
 
 	return;
 }
 
 
-void QMM::insertAndMutiply( std::list< MyUnorderedSet > &a , const MyUnorderedSet &b )
+void QMM::insertAndMutiply( std::list< QMM::MySolSet > &a , const QMM::MySolSet &b )
 {
 	if( a.empty() )
 	{
@@ -198,16 +216,15 @@ void QMM::insertAndMutiply( std::list< MyUnorderedSet > &a , const MyUnorderedSe
 		return;
 	}
 
-	std::list< MyUnorderedSet > tmp_list( std::move( a ) );
-	a.clear();
+	std::list< QMM::MySolSet > tmp_list;
+	tmp_list.swap( a );
 	for( const auto &i : tmp_list )
 	{
-		const MyUnorderedSet base( i );
 		for( const auto &j : b )
 		{
-			auto tmp = base;
-			tmp.emplace( j );
-			a.emplace_back( std::move( tmp ) );
+			QMM::MySolSet base( i );
+			base.emplace( j );
+			a.emplace_back( std::move( base ) );
 		}
 	}
 
@@ -215,7 +232,7 @@ void QMM::insertAndMutiply( std::list< MyUnorderedSet > &a , const MyUnorderedSe
 }
 
 
-void QMM::simplify( std::list< MyUnorderedSet > &a )
+void QMM::simplify( std::list< QMM::MySolSet > &a )
 {
 	for( auto i = a.cbegin() ; i != a.cend() ; ++i )
 	{
@@ -254,6 +271,7 @@ void QMM::simplify( std::list< MyUnorderedSet > &a )
 			}
 			else if( i->size() > j->size() )
 			{
+				// do nothing
 			}
 
 			++j;
@@ -264,7 +282,7 @@ void QMM::simplify( std::list< MyUnorderedSet > &a )
 }
 
 
-const MyMmap *QMM::getOutput() const
+const QMM::MyMap *QMM::getOutput() const
 {
 	return &my_multimap;
 }
@@ -278,7 +296,21 @@ void QMM::reset()
 }
 
 
-void QMM::printList( const std::list< MyUnorderedSet > &a , const std::string &b ) const
+void QMM::printMap( const QMM::MyMap &a , const std::string &b ) const
+{
+	if( !b.empty() )
+		printf( "%s:\n" , b.c_str() );
+	for( const auto &i : a )
+	{
+		printf( " %x:\n" , i.first );
+		printUnorderedSet( i.second , "" );
+	}
+	printf( "\n" );
+	return;
+}
+
+
+void QMM::printList( const std::list< QMM::MyUnorderedSet > &a , const std::string &b ) const
 {
 	if( !b.empty() )
 		printf( "%s:\n" , b.c_str() );
@@ -291,27 +323,21 @@ void QMM::printList( const std::list< MyUnorderedSet > &a , const std::string &b
 }
 
 
-void QMM::printMap( const MyMmap &a , const std::string &b ) const
+void QMM::printUnorderedSet( const QMM::MyUnorderedSet &a , const std::string &b ) const
 {
 	if( !b.empty() )
 		printf( "%s:\n" , b.c_str() );
 	for( const auto &i : a )
 	{
-		printf( "%u / %x\n" , i.second , i.first );
+		printf( " %u" , i );
 	}
 	printf( "\n" );
 	return;
 }
 
-
-void QMM::printUnorderedSet( const MyUnorderedSet &a , const std::string &b ) const
+/*
+size_t QMM::MyMapHash::operator()( const QMM::MyUnorderedSet::const_iterator &a ) const
 {
-	if( !b.empty() )
-		printf( "%s:\n" , b.c_str() );
-	for( const auto &i : a )
-	{
-		printf( " %zu" , i );
-	}
-	printf( "\n" );
-	return;
+	return std::hash< const QMM::MyUnorderedSet::value_type * >()( &( *a ) );
 }
+*/
