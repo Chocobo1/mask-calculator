@@ -211,7 +211,9 @@ void QMM::insertAndMutiply( std::list< QMM::MySolSet > &a , const QMM::MySolSet 
 	{
 		for( const auto &i : b )
 		{
-			a.emplace_back( i );
+			QMM::MySolSet base;
+			base.emplace( i );
+			a.emplace_back( std::move( base ) );
 		}
 		return;
 	}
@@ -317,8 +319,8 @@ void QMM::printList( const std::list< QMM::MyUnorderedSet > &a , const std::stri
 	for( const auto &i : a )
 	{
 		printUnorderedSet( i , "" );
-	}
-	printf( "\n" );
+		}
+		printf( "\n" );
 	return;
 }
 
