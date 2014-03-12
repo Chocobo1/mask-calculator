@@ -312,15 +312,19 @@ void QMM::printMap( const QMM::MyMap &a , const std::string &b ) const
 }
 
 
-void QMM::printList( const std::list< QMM::MyUnorderedSet > &a , const std::string &b ) const
+void QMM::printList( const std::list< QMM::MySolSet > &a , const std::string &b ) const
 {
 	if( !b.empty() )
 		printf( "%s:\n" , b.c_str() );
 	for( const auto &i : a )
 	{
-		printUnorderedSet( i , "" );
+		for( const auto &j : i )
+		{
+			printf( " %zu" , j );
 		}
 		printf( "\n" );
+	}
+	printf( "\n" );
 	return;
 }
 

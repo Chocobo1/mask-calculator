@@ -32,7 +32,7 @@ class QMM
 		void insertAndMutiply( std::list< QMM::MySolSet > &a , const QMM::MySolSet &b );
 
 		void printMap( const QMM::MyMap &a , const std::string &b ) const;
-		void printList( const std::list< QMM::MyUnorderedSet > &a , const std::string &b ) const;
+		void printList( const std::list< QMM::MySolSet > &a , const std::string &b ) const;
 		void printUnorderedSet( const QMM::MyUnorderedSet &a , const std::string &b ) const;
 
 		QMM::MyMap my_multimap;  // limit to 32 bits, <Key, Value> = <mask, value>
