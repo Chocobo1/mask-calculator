@@ -211,9 +211,7 @@ void QMM::insertAndMutiply( std::list< QMM::MySolSet > &a , const QMM::MySolSet 
 	{
 		for( const auto &i : b )
 		{
-			QMM::MySolSet base;
-			base.emplace( i );
-			a.emplace_back( std::move( base ) );
+			a.push_back( { i } );
 		}
 		return;
 	}
