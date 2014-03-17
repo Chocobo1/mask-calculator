@@ -49,10 +49,10 @@ void QMM::addDontCare( const uint32_t a , const uint32_t b )
 
 void QMM::doCalc()
 {
-	// don't cares have priority
-	for( const auto &i : my_dontcares )
+	// my_input have priority
+	for( const auto &i : my_input )
 	{
-		my_input.erase( i );
+		my_dontcares.erase( i );
 	}
 
 	// insert & combine minterms
