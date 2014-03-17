@@ -19,6 +19,9 @@ class QMM
 		void addNum( const uint32_t a );
 		void addNum( const uint32_t a , const uint32_t b );
 
+		void addDontCare( const uint32_t a );
+		void addDontCare( const uint32_t a , const uint32_t b );
+
 		void doCalc();
 		const QMM::MyMap *getOutput() const;
 
@@ -37,6 +40,7 @@ class QMM
 
 		QMM::MyMap my_multimap;  // limit to 32 bits, <Key, Value> = <mask, value>
 		MyUnorderedSet my_input;  // for storing every inputs
+		MyUnorderedSet my_dontcares;
 
 //		struct MyMapHash
 //		{

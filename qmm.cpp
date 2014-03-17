@@ -25,17 +25,51 @@ void QMM::addNum( const uint32_t a , const uint32_t b )
 }
 
 
+void QMM::addDontCare( const uint32_t a )
+{
+	my_dontcares.emplace( a );
+	return;
+}
+
+
+void QMM::addDontCare( const uint32_t a , const uint32_t b )
+{
+	// add a range of numbers [a, b]
+	const uint32_t start = std::min( a , b );
+	const uint32_t end = std::max( a , b );
+
+	auto h = my_dontcares.cend();
+	for( auto i = start ; i <= end ; ++i )
+	{
+		h = my_dontcares.emplace_hint( h , i );
+	}
+	return;
+}
+
+
 void QMM::doCalc()
 {
+	// don't cares have priority
+	for( const auto &i : my_dontcares )
+	{
+		my_input.erase( i );
+	}
+
 	// insert & combine minterms
 	MyMapRmList rm_list;
 
-	my_multimap[ UINT_MAX ].reserve( my_input.size() );  // save CPU cycles when input is many
-	rm_list[ UINT_MAX ].reserve( my_input.size() );
+	const size_t max_input = my_input.size() + my_dontcares.size();
+	my_multimap[ UINT_MAX ].reserve( max_input );  // save CPU cycles when input is many
+	rm_list[ UINT_MAX ].reserve( max_input );
 
 	for( const auto &i : my_input )
 	{
 		insertMinterm( i , UINT_MAX , rm_list );
+	}
+	for( const auto &i : my_dontcares )
+	{
+		insertMinterm( i , UINT_MAX , rm_list );
+		rm_list[ UINT_MAX ].emplace( i );
 	}
 
 	// remove combined minterms
@@ -292,6 +326,7 @@ void QMM::reset()
 {
 	my_multimap.clear();
 	my_input.clear();
+	my_dontcares.clear();
 	return;
 }
 
