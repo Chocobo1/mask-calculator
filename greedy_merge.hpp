@@ -16,6 +16,9 @@ class GreedyMerge
 		void addNum( const uint32_t a );
 		void addNum( const uint32_t a , const uint32_t b );
 
+		void addDontCare( const uint32_t a );
+		void addDontCare( const uint32_t a , const uint32_t b );
+
 		void doCalc();
 		const GreedyMerge::MyMap *getOutput() const;
 

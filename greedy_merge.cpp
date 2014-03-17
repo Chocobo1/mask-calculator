@@ -24,6 +24,20 @@ void GreedyMerge::addNum( const uint32_t a , const uint32_t b )
 }
 
 
+void GreedyMerge::addDontCare( const uint32_t a )
+{
+	addNum( a );
+	return;
+}
+
+
+void GreedyMerge::addDontCare( const uint32_t a , const uint32_t b )
+{
+	addNum( a , b );
+	return;
+}
+
+
 void GreedyMerge::doCalc()
 {
 	// nothing to do
