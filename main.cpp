@@ -38,8 +38,8 @@ int main( const int argc , char *argv[] )
 		exit( EXIT_FAILURE );
 	}
 
-	GreedyMerge my_calc;
-//	QMM my_calc;
+//	GreedyMerge my_calc;
+	QMM my_calc;
 
 	// get/sort numbers
 	for( auto i = 1 ; i < argc ; ++i )
