@@ -21,6 +21,7 @@
 #include "greedy_merge.hpp"
 
 #include "common.hpp"
+#include <climits>
 
 
 void GreedyMerge::addNum( const uint32_t a )

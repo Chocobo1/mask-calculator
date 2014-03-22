@@ -21,6 +21,7 @@
 #include "qmm.hpp"
 
 #include "common.hpp"
+#include <climits>
 
 
 void QMM::addNum( const uint32_t a )
