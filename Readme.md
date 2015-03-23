@@ -1,4 +1,4 @@
-﻿# Mask calcuator
+﻿# Mask calculator
 Generate masks which cover a set of numbers
 
 ## Algorithms
