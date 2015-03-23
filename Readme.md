@@ -1,6 +1,8 @@
 ﻿# Mask calculator
 Generate masks for a set of numbers
 
+[![Travis CI status](https://travis-ci.org/Chocobo1/mask-calculator.svg?branch=master)](https://travis-ci.org/Chocobo1/mask-calculator)
+
 ## Algorithms
 ### qmm.cpp
 * Implements the [Quine–McCluskey algorithm](http://en.wikipedia.org/wiki/Quine%E2%80%93McCluskey_algorithm) and [Petrick's method](http://en.wikipedia.org/wiki/Petrick%27s_method)
